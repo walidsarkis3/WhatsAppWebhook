@@ -48,13 +48,6 @@ app.get('/', (req, res) => {
   if (mode === 'subscribe' && token === verifyToken) {
     console.log('WEBHOOK VERIFIED by Walid Sarkis');
     res.status(200).send(challenge);
-
-    // Call Salesforce OAuth after responding
-    const token = await getSalesforceToken();
-    if (token) {
-        console.log('Token successfully retrieved and ready for further API calls.');
-        // You can make further Salesforce API calls here using the token
-    }
   } else {
     res.status(403).end();
   }
@@ -66,6 +59,13 @@ app.post('/', async(req, res) => {
   console.log(`\n\nWebhook received ${timestamp}\n`);
   console.log(JSON.stringify(req.body, null, 2));
   res.status(200).end();
+
+  // Call Salesforce OAuth after responding
+  const token = await getSalesforceToken();
+  if (token) {
+    console.log('Token successfully retrieved and ready for further API calls.');
+    // You can make further Salesforce API calls here using the token
+  }
 });
 
 // Start the server
