@@ -43,7 +43,7 @@ async function getSalesforceToken() {
       }
     );
 
-    console.log("Salesforce Access Token:", response.data.access_token);
+    //console.log("Salesforce Access Token:", response.data.access_token);
     return response.data.access_token;
 
   } catch (error) {
@@ -67,8 +67,8 @@ app.get('/', (req, res) => {
 // Route for POST requests
 app.post('/', async(req, res) => {
   const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19);
-  console.log(`\n\nWebhook received ${timestamp}\n`);
-  console.log(JSON.stringify(req.body, null, 2));
+  //console.log(`\n\nWebhook received ${timestamp}\n`);
+  //console.log(JSON.stringify(req.body, null, 2));
   res.status(200).end();
 
   // Call Salesforce OAuth after responding
@@ -96,6 +96,6 @@ function getAssertionToken() {
 
     // Sign the JWT (RS256)
     const assertion = jwt.sign(payload, jwtPrivateKey, { algorithm: 'RS256' });
-    console.log('assertion : ' +  assertion);
+    //console.log('assertion : ' +  assertion);
     return assertion;
 }
