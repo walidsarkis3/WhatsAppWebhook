@@ -90,7 +90,7 @@ function getAssertionToken() {
     const payload = {
       iss: sfClientId, // Consumer Key
       sub: sfUsername, 
-      aud: SF_TOKEN_AUD,        
+      aud: sfTokenAud,        
       exp: Math.floor(Date.now() / 1000) + 180    // 3 min expiry
     };
 
