@@ -83,7 +83,7 @@ app.listen(port, () => {
   console.log(`\nListening on port ${port}\n`);
 });
 
-function getAssertionToken() {
+async function getAssertionToken() {
 
     // Build the JWT payload
     const payload = {
