@@ -9,7 +9,6 @@ const app = express();
 
 // Load private key
 const jwtPrivateKey = process.env.JWT_PRIVATE;
-const privateKey = fs.readFileSync(jwtPrivateKey, 'utf8');
 
 // Middleware to parse JSON bodies
 app.use(express.json());
@@ -96,6 +95,6 @@ function getAssertionToken() {
     };
 
     // Sign the JWT (RS256)
-    const assertion = jwt.sign(payload, privateKey, { algorithm: 'RS256' });
+    const assertion = jwt.sign(payload, jwtPrivateKey, { algorithm: 'RS256' });
     return assertion;
 }
