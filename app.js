@@ -71,6 +71,12 @@ app.post('/', async(req, res) => {
   //console.log(JSON.stringify(req.body, null, 2));
   res.status(200).end();
 
+  // Skip empty bodies
+  if (!req.body || Object.keys(req.body).length === 0 || !req.body.messageId) {
+    
+    return;
+  }
+  
   // Call Salesforce OAuth after responding
   const token = await getSalesforceToken();
   if (token) {
