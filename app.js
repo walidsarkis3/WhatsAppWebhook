@@ -8,7 +8,8 @@ import jwt from 'jsonwebtoken';
 const app = express();
 
 // Load private key
-const privateKey = fs.readFileSync('jwt_private.key', 'utf8');
+const jwtPrivateKey = process.env.JWT_PRIVATE;
+const privateKey = fs.readFileSync(jwtPrivateKey, 'utf8');
 
 // Middleware to parse JSON bodies
 app.use(express.json());
