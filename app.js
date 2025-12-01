@@ -2,40 +2,51 @@
 const express = require('express');
 const axios = require('axios');
 
+import fs from 'fs';
+import jwt from 'jsonwebtoken';
+
 // Create an Express app
 const app = express();
+
+// Load private key
+const privateKey = fs.readFileSync('jwt_private.key', 'utf8');
 
 // Middleware to parse JSON bodies
 app.use(express.json());
 
 // Set port and verify_token
 const port = process.env.PORT || 3000;
+
+// Token used to verify the webhook endpoint with the GET request
 const verifyToken = process.env.VERIFY_TOKEN;
 
 // Salesforce credentials from environment variables
 const sfClientId = process.env.SF_CLIENT_ID;
-const sfClientSecret = process.env.SF_CLIENT_SECRET;
 const sfUsername = process.env.SF_USERNAME;
-const sfPassword = process.env.SF_PASSWORD;
 const sfTokenUrl = process.env.SF_TOKEN_URL;
+const sfTokenAud = process.env.SF_TOKEN_AUD;
 
 // Function to get Salesforce OAuth token
 async function getSalesforceToken() {
+  
   try {
-    const response = await axios.post(sfTokenUrl, null, {
-      params: {
-        grant_type: 'password',
-        client_id: sfClientId,
-        client_secret: sfClientSecret,
-        username: sfUsername,
-        password: sfPassword,
-      },
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    });
-    console.log('Salesforce OAuth token received:', response.data.access_token);
+
+    const assertionToken = getAssertionToken();
+
+    const response = await axios.post(
+      sfTokenUrl,
+      new URLSearchParams({
+        grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+        assertion: assertionToken
+      }),
+      {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" }
+      }
+    );
+
+    console.log("Salesforce Access Token:", response.data.access_token);
     return response.data.access_token;
+
   } catch (error) {
     console.error('Error getting Salesforce token:', error.response?.data || error.message);
     return null;
@@ -73,3 +84,18 @@ app.post('/', async(req, res) => {
 app.listen(port, () => {
   console.log(`\nListening on port ${port}\n`);
 });
+
+function getAssertionToken() {
+
+    // Build the JWT payload
+    const payload = {
+      iss: sfClientId, // Consumer Key
+      sub: sfUsername, 
+      aud: SF_TOKEN_AUD,        
+      exp: Math.floor(Date.now() / 1000) + 180    // 3 min expiry
+    };
+
+    // Sign the JWT (RS256)
+    const assertion = jwt.sign(payload, privateKey, { algorithm: 'RS256' });
+    return assertion;
+}
