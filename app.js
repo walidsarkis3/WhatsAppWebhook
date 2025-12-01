@@ -74,8 +74,7 @@ app.post('/', async(req, res) => {
   // Call Salesforce OAuth after responding
   const token = await getSalesforceToken();
   if (token) {
-    console.log('Token successfully retrieved and ready for further API calls.');
-    // You can make further Salesforce API calls here using the token
+    sendWhatsAppMessageToSalesforceApiCall(token,req.body);
   }
 });
 
@@ -98,4 +97,29 @@ function getAssertionToken() {
     const assertion = jwt.sign(payload, jwtPrivateKey, { algorithm: 'RS256' });
     //console.log('assertion : ' +  assertion);
     return assertion;
+}
+
+function sendWhatsAppMessageToSalesforceApiCall(token,messagePayload) {
+
+  try {
+    var sfInstanceUrl = 'https://orgfarm-767e662db4-dev-ed.develop.my.salesforce.com';
+    const response = await axios.post(
+      `${sfInstanceUrl}/services/apexrest/WA/Message`,
+      messagePayload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    console.log("Apex response:", response.data);
+    return response.data;
+    
+  } catch (err) {
+    
+    console.error("Error calling Apex endpoint:", err.response?.data || err.message);
+    throw err;
+  }
 }
