@@ -83,7 +83,7 @@ app.listen(port, () => {
   console.log(`\nListening on port ${port}\n`);
 });
 
-async function getAssertionToken() {
+function getAssertionToken() {
 
     // Build the JWT payload
     const payload = {
@@ -99,7 +99,7 @@ async function getAssertionToken() {
     return assertion;
 }
 
-function sendWhatsAppMessageToSalesforceApiCall(token,messagePayload) {
+async function sendWhatsAppMessageToSalesforceApiCall(token,messagePayload) {
 
   try {
     var sfInstanceUrl = 'https://orgfarm-767e662db4-dev-ed.develop.my.salesforce.com';
