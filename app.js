@@ -96,5 +96,6 @@ function getAssertionToken() {
 
     // Sign the JWT (RS256)
     const assertion = jwt.sign(payload, jwtPrivateKey, { algorithm: 'RS256' });
+    console.log('assertion : ' +  assertion);
     return assertion;
 }
