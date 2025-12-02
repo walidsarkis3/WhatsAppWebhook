@@ -68,15 +68,19 @@ app.get('/', (req, res) => {
 app.post('/', async(req, res) => {
   const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19);
   console.log(`\n\nWebhook received ${timestamp}\n`);
-  console.log(JSON.stringify(req.body, null, 2));
-  console.log('-----------');
+  //console.log(JSON.stringify(req.body, null, 2));
   res.status(200).end();
 
-  // Skip empty bodies
-  if (!req.body || Object.keys(req.body).length === 0 || req.body.object != 'whatsapp_business_account') {
-    
+  // Skip status messages
+  const entry = req.body?.entry?.[0];
+  const changes = entry?.changes?.[0];
+  const value = changes?.value;
+
+  // Ignore status updates
+  if (value?.statuses) {
     return;
   }
+
   
   // Call Salesforce OAuth after responding
   const token = await getSalesforceToken();
