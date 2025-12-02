@@ -31,7 +31,7 @@ async function getSalesforceToken() {
   try {
 
     const assertionToken = getAssertionToken();
-    console.log('Assertion tokent ok');
+
     const response = await axios.post(
       sfTokenUrl,
       new URLSearchParams({
@@ -43,7 +43,7 @@ async function getSalesforceToken() {
       }
     );
 
-    console.log("Salesforce Access Token:", response.data.access_token);
+    //console.log("Salesforce Access Token:", response.data.access_token);
     return response.data.access_token;
 
   } catch (error) {
@@ -72,15 +72,14 @@ app.post('/', async(req, res) => {
   res.status(200).end();
 
   // Skip empty bodies
-  if (!req.body || Object.keys(req.body).length === 0) {
+  if (!req.body || Object.keys(req.body).length === 0 || req.body.object != 'whatsapp_business_account') {
     
     return;
   }
-
-  console.log('getting token');
+  
   // Call Salesforce OAuth after responding
   const token = await getSalesforceToken();
-  console.log(token);
+
   if (token) {
     sendWhatsAppMessageToSalesforceApiCall(token,req.body);
   }
@@ -103,7 +102,7 @@ function getAssertionToken() {
 
     // Sign the JWT (RS256)
     const assertion = jwt.sign(payload, jwtPrivateKey, { algorithm: 'RS256' });
-    console.log('assertion : ' +  assertion);
+    //console.log('assertion : ' +  assertion);
     return assertion;
 }
 
